@@ -9,7 +9,7 @@ from sqlalchemy import text
 import pandas as pd
 
 #create df
-def create_df(connection):
+def create_table(mysql_connection,sql_code):
     """
     
 
@@ -24,10 +24,11 @@ def create_df(connection):
         DESCRIPTION.
 
     """
-    sql_select = """Select * from data_projects.dbo.retail_data"""
-    sql_query_select = text(sql_select)
+    sql_query_select = text(sql_code)
     print(sql_query_select)
-    data = connection.execute(sql_query_select).fetchall()
-    df = pd.DataFrame(data)
+    mysql_connection.execute(sql_query_select)
+    print("Table created successfully.")
+
    
-    return df
+   
+   
