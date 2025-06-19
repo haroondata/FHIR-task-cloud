@@ -17,7 +17,7 @@ def mysql_connection():
     # Initialize the ConfigParser
     config = configparser.ConfigParser(interpolation=None)
     # Read the config
-    config.read('config.txt')
+    config.read('C:/Users/Haroon/Documents/config/config.txt')
     
        
     #config to get the MYSQL info
