@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS `encounter` (
+  `resourcetype` VARCHAR(255) DEFAULT NULL,
+  `id` VARCHAR(255) DEFAULT NULL,
+  `meta_profile_0` VARCHAR(255) DEFAULT NULL,
+  `identifier` VARCHAR(255) DEFAULT NULL,
+  `status` VARCHAR(255) DEFAULT NULL,
+  `class_system` VARCHAR(255) DEFAULT NULL,
+  `class_code` VARCHAR(255) DEFAULT NULL,
+  `type` VARCHAR(255) DEFAULT NULL,
+  `subject_reference` VARCHAR(255) DEFAULT NULL,
+  `subject_display` VARCHAR(255) DEFAULT NULL,
+  `participant` VARCHAR(255) DEFAULT NULL,
+  `period_start` VARCHAR(255) DEFAULT NULL,
+  `period_end` VARCHAR(255) DEFAULT NULL,
+  `location` VARCHAR(255) DEFAULT NULL,
+  `serviceprovider_reference` VARCHAR(255) DEFAULT NULL,
+  `serviceprovider_display` VARCHAR(255) DEFAULT NULL,
+  `reasoncode` VARCHAR(255) DEFAULT NULL,
+  `hospitalization_dischargedisposition_coding` VARCHAR(255) DEFAULT NULL,
+  `hospitalization_dischargedisposition_text` VARCHAR(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

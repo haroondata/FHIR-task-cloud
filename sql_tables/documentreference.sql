@@ -1,0 +1,18 @@
+CREATE TABLE IF NOT EXISTS `documentreference` (
+  `resourcetype` VARCHAR(255) DEFAULT NULL,
+  `id` VARCHAR(255) DEFAULT NULL,
+  `meta_profile_0` VARCHAR(255) DEFAULT NULL,
+  `identifier` VARCHAR(255) DEFAULT NULL,
+  `status` VARCHAR(255) DEFAULT NULL,
+  `type_coding` VARCHAR(255) DEFAULT NULL,
+  `category` VARCHAR(255) DEFAULT NULL,
+  `subject_reference` VARCHAR(255) DEFAULT NULL,
+  `date` VARCHAR(255) DEFAULT NULL,
+  `author` VARCHAR(255) DEFAULT NULL,
+  `custodian_reference` VARCHAR(255) DEFAULT NULL,
+  `custodian_display` VARCHAR(255) DEFAULT NULL,
+  `content` VARCHAR(255) DEFAULT NULL,
+  `context_encounter` VARCHAR(255) DEFAULT NULL,
+  `context_period_start` VARCHAR(255) DEFAULT NULL,
+  `context_period_end` VARCHAR(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
