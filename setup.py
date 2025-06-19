@@ -6,8 +6,7 @@ Created on Sun Jun 23 17:44:26 2024
 """
 
 
-#ms sql connection 
-from src.tools.mssql_connection import  mssql_connection
+
 
 #mysql connection 
 from src.tools.mysql_connection import  mysql_connection
