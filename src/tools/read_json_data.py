@@ -132,7 +132,8 @@ def get_data_from_json(username):
 
     """
     # === File Path ===
-    data_dir = "C:/Users/"+username+"/Documents/GitHub/FHIR-task/data/"
+    data_dir = os.path.join("/app/data")
+
     
     resource_map = defaultdict(list)
     #mysql connection
