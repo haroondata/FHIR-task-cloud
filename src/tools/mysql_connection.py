@@ -6,7 +6,7 @@ Created on Sun Jun 23 17:50:52 2024
 """
 
 from urllib.parse import quote_plus
-
+import os
 import configparser
 import sqlalchemy
 
@@ -14,18 +14,14 @@ import sqlalchemy
 
 # mysql connection
 def mysql_connection():
-    # Initialize the ConfigParser
-    config = configparser.ConfigParser(interpolation=None)
-    # Read the config
-    config.read('C:/Users/Haroon/Documents/config/config.txt')
-    
-       
+  
     #config to get the MYSQL info
-    db_username = config.get('DEFAULT', 'username')
-    db_password = quote_plus(config.get('DEFAULT', 'password'))
-    db_host = config.get('DEFAULT', 'host')
-    db_port = '3306'
-    db_name = config.get('DEFAULT', 'database')
+    db_username = os.getenv('DB_USER')
+    print(db_username)
+    db_password = quote_plus(os.getenv('DB_PASSWORD'))
+    db_host     = os.getenv('DB_HOST')
+    db_port     = os.getenv('DB_PORT', '3306')
+    db_name     = os.getenv('DB_NAME')
     
     #-----Portal 4 Configurations whilst running in parallel-----#
     # Create the database URL
