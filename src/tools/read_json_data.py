@@ -9,7 +9,7 @@ import os
 import json
 import pandas as pd
 from collections import defaultdict
-#mysql connection 
+
 from src.tools.insert_data_into_mysql import insert_data_into_mysql
 import getpass
 
@@ -23,19 +23,6 @@ resource_type_list = []
 #mysql connection
 mysql_engine,mysql_connection =  mysql_connection()
 
-
-def get_username():
-    """
-    
-
-    Returns
-    -------
-    username : TYPE
-        DESCRIPTION.
-
-    """
-    username = getpass.getuser()
-    return username
 
 def flatten_json(nested_json):
     """
@@ -122,13 +109,14 @@ def generate_mysql_create_table(df, table_name):
     return "\n".join(lines)
 
 
-def get_data_from_json(username):
+def get_data_from_json():
     """
     
 
     Returns
     -------
-    None.
+    resource_map : TYPE
+        DESCRIPTION.
 
     """
     # === File Path ===
@@ -245,7 +233,7 @@ def create_csv_files_and_insert_data_into_mysql_db(resource_map):
 def check_if_connection_is_closed():  
     """
     
-
+    
     Returns
     -------
     None.
