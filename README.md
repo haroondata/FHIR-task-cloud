@@ -46,9 +46,9 @@ docker-compose up --build
 ## Project Structure
 ```
 .
-├── data/                      # Input FHIR JSON files
+├── data/                    # Input FHIR JSON files
 ├── output/                   # Output CSVs (optional)
-├── src/
+|─ src/
 │   ├── tools/
 │   │   ├── read_json_data.py
 │   │   ├── flatten_json.py
@@ -57,7 +57,7 @@ docker-compose up --build
 ├── requirements.txt
 ├── Dockerfile
 ├── .env
-└── main.py
+└─ main.py
 ```
 
 ---
