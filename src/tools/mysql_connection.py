@@ -1,29 +1,40 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Jun 23 17:50:52 2024
+Created on Thu Jun 26 12:00:00 2025
 
 @author: Haroon
 """
 
 from urllib.parse import quote_plus
 import os
-import configparser
 import sqlalchemy
+import logging
 
 
 
-# mysql connection
 def mysql_connection():
+    """
+    Establishes a connection to a MySQL database using SQLAlchemy.
+    
+    Raises
+    ------
+    Exception: If connection fails.
+
+    Returns
+    -------
+    engine (sqlalchemy.engine.Engine): SQLAlchemy engine object.
+    connection (sqlalchemy.engine.Connection): Active DB connection.
+
+    """
   
     #config to get the MYSQL info
     db_username = os.getenv('DB_USER')
-    print(db_username)
     db_password = quote_plus(os.getenv('DB_PASSWORD'))
     db_host     = os.getenv('DB_HOST')
     db_port     = os.getenv('DB_PORT', '3306')
     db_name     = os.getenv('DB_NAME')
     
-    #-----Portal 4 Configurations whilst running in parallel-----#
+  
     # Create the database URL
     database_url = f'mysql://{db_username}:{db_password}@{db_host}:{db_port}/{db_name}'
     
@@ -32,7 +43,7 @@ def mysql_connection():
        
     try:
         connection = engine.connect()
-        print("Connected to the MYSQL database.")
+        logging.info("Connected to the MySQL database.")
     except Exception as e:
         raise Exception("Connection failed:", e)
-    return engine,connection
+    return engine, connection
