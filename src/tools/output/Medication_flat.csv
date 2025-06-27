@@ -1,2 +1,0 @@
-resourcetype,id,meta_profile_0,code_coding,code_text,status
-Medication,27f86bca-7d0d-5e68-c430-4176ee8c1c32,http://hl7.org/fhir/us/core/StructureDefinition/us-core-medication,"[{""system"": ""http://www.nlm.nih.gov/research/umls/rxnorm"", ""code"": ""1719286"", ""display"": ""10 ML Furosemide 10 MG/ML Injection""}]",10 ML Furosemide 10 MG/ML Injection,active

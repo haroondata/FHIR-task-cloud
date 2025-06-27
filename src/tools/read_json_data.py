@@ -1,30 +1,22 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Jun 14 18:51:37 2025
+Created on Thu Jun 26 12:00:00 2025
 
 @author: Haroon
 """
-
+import logging
 import os
 import json
-import pandas as pd
 from collections import defaultdict
 
-from src.tools.insert_data_into_mysql import insert_data_into_mysql
-import getpass
-
-#mysql connection 
-from src.tools.mysql_connection import  mysql_connection
-from src.tools.sql_queries import create_table
 
 
-check_stack = []
-resource_type_list = []
-#mysql connection
-mysql_engine,mysql_connection =  mysql_connection()
 
 
-def flatten_json(nested_json):
+
+
+
+def flatten_json(nested_json: dict) -> dict:
     """
     
 
@@ -62,52 +54,36 @@ def flatten_json(nested_json):
     recurse(nested_json)
     return flat
 
+def extract_patient_data(resource: dict) -> dict:
 
-def generate_mysql_create_table(df, table_name):
-    """
+    flat = flatten_json(resource)
+
+    # Extract name: combine first name and family name if available
+    name_info = resource.get("name", [{}])[0]
+    family = name_info.get("family", "")
+    given = " ".join(name_info.get("given", [])) if isinstance(name_info.get("given"), list) else name_info.get("given", "")
+    full_name = f"{given} {family}".strip()
+
+    # Extract telecoms: phone and email
+    telecom_entries = resource.get("telecom", [])
+    phone = email = None
+    for entry in telecom_entries:
+        if entry.get("system") == "phone" and not phone:
+            phone = entry.get("value")
+        elif entry.get("system") == "email" and not email:
+            email = entry.get("value")
+
+    # Add extracted fields to the flat dictionary
+    flat["first_name"] = given
+    flat["last_name"] = family
+    flat["name_full"] = full_name
+    flat["telecom_phone"] = phone
+    flat["telecom_email"] = email
     
-
-    Parameters
-    ----------
-    df : TYPE
-        DESCRIPTION.
-    table_name : TYPE
-        DESCRIPTION.
-
-    Returns
-    -------
-    TYPE
-        DESCRIPTION.
-
-    """
-    sql_types = {
-        'int64': 'BIGINT',
-        'float64': 'FLOAT',
-        'object': 'VARCHAR(255)',
-        'bool': 'BOOLEAN',
-        'datetime64[ns]': 'DATETIME'
-    }
-
-    lines = [f"CREATE TABLE IF NOT EXISTS `{table_name}` ("]
-    
-    col_defs = []
-    for col in df.columns:
-        col_name = col.replace(" ", "_").replace(".", "_").lower()
-        try:
-            dtype = str(df[col].dtype)
-        except Exception as e:
-            print(f"Error getting dtype for column '{col}': {e}")
-            dtype = 'object'
-        sql_type = sql_types.get(dtype, 'VARCHAR(255)')
-        col_defs.append(f"  `{col_name}` {sql_type} DEFAULT NULL")
-
-    #  Join columns with commas, and ensure no trailing comma
-    lines.append(",\n".join(col_defs))
-
-    lines.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;")
-    
-    return "\n".join(lines)
-
+    keys_to_remove = [k for k in flat if k.startswith("name.") or k == "name" or k.startswith("telecom.")or k == "telecom"]
+    for key in keys_to_remove:
+        flat.pop(key, None)
+    return flat
 
 def get_data_from_json():
     """
@@ -124,126 +100,45 @@ def get_data_from_json():
 
     
     resource_map = defaultdict(list)
+    file_tracking_map = {} 
     #mysql connection
     # === Loop over all JSON files ===
     for file in os.listdir(data_dir):
         if file.endswith(".json"):
             file_path = os.path.join(data_dir, file)
-            print(file_path)
-            with open(file_path, 'r', encoding='utf-8') as f:
-                bundle = json.load(f)
+            logging.info(f"Processing file: {file_path}")
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    bundle = json.load(f)
+            except (json.JSONDecodeError, UnicodeDecodeError) as e:
+                logging.error(f"Invalid JSON file: {file_path} — {e}")
+                continue
+
+
     
             # === Flatten and group by resourceType ===
+            if 'entry' not in bundle or not bundle['entry']:
+                logging.warning(f"No 'entry' found in {file_path}. Skipping.")
+                continue
             entries = bundle.get('entry', [])
             for item in entries:
                 resource = item.get('resource', {})
                 resource_type = resource.get('resourceType', 'Unknown')
-                flat = flatten_json(resource)
+                if resource_type == "Patient":
+                    flat = extract_patient_data(resource)
+                else:
+                    flat = flatten_json(resource)
                 resource_map[resource_type].append(flat)
-    return resource_map
-                
+                file_tracking_map[resource_type] = file 
+    return resource_map, file_tracking_map
 
 
 
-def clean_fhir_column_names(df):
-    """
+
+
+
     
 
-    Parameters
-    ----------
-    df : TYPE
-        DESCRIPTION.
 
-    Returns
-    -------
-    df : TYPE
-        DESCRIPTION.
-
-    """
-    df.columns = (
-        df.columns
-        .str.replace(r'\.', '_', regex=True)          # replace dots with underscores
-        .str.replace(r'\W+', '_', regex=True)         # remove weird characters
-        .str.strip('_')                               # trim leading/trailing underscores
-        .str.lower()                                  # lowercase for uniformity
-       )
-    return df
- 
-def write_sql_create_table_statements(resource_map):
-    """
-    
-
-    Returns
-    -------
-    None.
-
-    """
-    sql_dir = "./sql_tables"
-    os.makedirs(sql_dir, exist_ok=True)
-    
-    for resource_type, records in resource_map.items():
-        resource_type_list.append(resource_type)
-        # Normalize the records: ensure all columns are included
-        df_list = [pd.json_normalize(record) for record in records]
-        if not df_list:
-            continue
-
-        # Combine all into one unified DataFrame
-        df = pd.concat(df_list, ignore_index=True).fillna(pd.NA)
-        df = clean_fhir_column_names(df)
-        
-        if not df.empty:
-            table_name = resource_type.lower()
-            sql_code = generate_mysql_create_table(df, table_name)
-            create_table(mysql_connection,sql_code)
-            # Save to file
-            sql_path = os.path.join(sql_dir, f"{table_name}.sql")
-            with open(sql_path, "w", encoding="utf-8") as f:
-                f.write(sql_code)
-            print(f"Saved SQL DDL to {sql_path}")
-
-def create_csv_files_and_insert_data_into_mysql_db(resource_map):
-    """
-    
-
-    Returns
-    -------
-    None.
-
-    """
-    # === Save each resourceType as its own CSV ===
-    output_dir = "./output"
-    os.makedirs(output_dir, exist_ok=True)
-    for resource_type, records in resource_map.items():
-        df = pd.DataFrame(records)
-        df = clean_fhir_column_names(df)
-        # Clean each DataFrame before inserting to SQL
-        for col in df.columns:
-            if df[col].apply(lambda x: isinstance(x, (list, dict))).any():
-                df[col] = df[col].apply(json.dumps)
-        csv_path = os.path.join(output_dir, f"{resource_type}_flat.csv")
-        df.to_csv(csv_path, index=False)
-        print(f"Saved {resource_type} records to {csv_path}")
-        #insert data into mysql
-        table_name = resource_type.lower()
-        # insert data into mysql
-        insert_data_into_mysql(mysql_engine,mysql_connection,df,table_name)
-    check_if_connection_is_closed()
-    
-def check_if_connection_is_closed():  
-    """
-    
-    
-    Returns
-    -------
-    None.
-
-    """
-    #Check if connection is closed
-    mysql_connection.close()
-    if mysql_connection.closed:
-          print("Connection is closed")
-    else:
-          print("Connection is open")
 
     
