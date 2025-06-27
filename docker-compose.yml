@@ -2,4 +2,8 @@ services:
   app:
     build: .
     env_file: .env
-    command: ["fhir-run"]
+    command: ["python", "main.py"]
+    volumes:
+      - ./logs:/app/logs       # Mount logs to your local ./logs folder
+      - ./output:/app/output   # Mount output files to your local ./output folder
+      - ./sql_tables:/app/sql_tables
