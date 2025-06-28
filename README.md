@@ -7,7 +7,7 @@ This project transforms FHIR-compliant patient data (in JSON format) into relati
 2. Flattens nested structures.
 3. Creates SQL tables (only for this task; not in production).
 4. Inserts cleaned data into MySQL.
-5. Optionally writes CSVs for inspection.
+5. Writes CSVs for inspection.
 
 ---
 
@@ -21,7 +21,7 @@ This project transforms FHIR-compliant patient data (in JSON format) into relati
 Store your MySQL credentials in a `.env` file:
 ```env
 DB_USERNAME=your_username
-DB_PASSWORD=your_password_with_special_chars
+DB_PASSWORD=your_password
 DB_HOST=your_db_host
 DB_NAME=your_database_name
 ```
@@ -45,19 +45,89 @@ docker-compose up --build
 
 ## Project Structure
 ```
-.
-├── data/                    # Input FHIR JSON files
-├── output/                   # Output CSVs (optional)
-|─ src/
-│   ├── tools/
-│   │   ├── read_json_data.py
-│   │   ├── flatten_json.py
-│   │   ├── mysql_connection.py
-│   │   └── insert_data_into_mysql.py
-├── requirements.txt
-├── Dockerfile
+./
 ├── .env
-└─ main.py
+├── .gitignore
+├── .pytest_cache
+│   ├── .gitignore
+│   ├── CACHEDIR.TAG
+│   └── v
+│       └── cache
+│           ├── lastfailed
+│           ├── nodeids
+│           └── stepwise
+├── Dockerfile
+├── docker-compose.yml
+├── docs
+│   └── info.txt
+├── logs
+├── main.py
+├── output
+│   ├── AllergyIntolerance_flat.csv
+│   ├── CarePlan_flat.csv
+│   ├── CareTeam_flat.csv
+│   ├── Claim_flat.csv
+│   ├── Condition_flat.csv
+│   ├── Device_flat.csv
+│   ├── DiagnosticReport_flat.csv
+│   ├── DocumentReference_flat.csv
+│   ├── Encounter_flat.csv
+│   ├── ExplanationOfBenefit_flat.csv
+│   ├── ImagingStudy_flat.csv
+│   ├── Immunization_flat.csv
+│   ├── MedicationAdministration_flat.csv
+│   ├── MedicationRequest_flat.csv
+│   ├── Medication_flat.csv
+│   ├── Observation_flat.csv
+│   ├── Patient_flat.csv
+│   ├── Procedure_flat.csv
+│   ├── Provenance_flat.csv
+│   └── SupplyDelivery_flat.csv
+├── requirements.txt
+├── sql_tables
+│   ├── allergyintolerance.sql
+│   ├── careplan.sql
+│   ├── careteam.sql
+│   ├── claim.sql
+│   ├── condition.sql
+│   ├── device.sql
+│   ├── diagnosticreport.sql
+│   ├── documentreference.sql
+│   ├── encounter.sql
+│   ├── explanationofbenefit.sql
+│   ├── imagingstudy.sql
+│   ├── immunization.sql
+│   ├── medication.sql
+│   ├── medicationadministration.sql
+│   ├── medicationrequest.sql
+│   ├── observation.sql
+│   ├── patient.sql
+│   ├── procedure.sql
+│   ├── provenance.sql
+│   └── supplydelivery.sql
+├── src
+│   ├── info.txt
+│   └── tools
+│       ├── db
+│       │   ├── check_connection.py
+│       │   ├── db_inserter.py
+│       │   ├── execute_schema_queries.py
+│       │   └── mysql_connection.py
+│       ├── etl
+│       │   ├── create_sql_schema.py
+│       │   ├── creates_csv_file.py
+│       │   ├── generate_sql_create_queries.py
+│       │   ├── prepare_and_load_to_mysql.py
+│       │   └── read_json_data.py
+│       ├── info.txt
+│       ├── logger.py
+│       └── utils
+│           ├── df_preprocessor.py
+│           └── helper_function_cleaning_df.py
+└── test
+    ├── test_extract_patient.py
+    ├── test_flatten.py
+    └── test_schema.py
 ```
 
 ---
