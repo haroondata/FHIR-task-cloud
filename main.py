@@ -6,12 +6,12 @@ Created on Sun Jun 23 17:44:26 2024
 @author: Haroon
 """
 
-from src.tools.read_json_data import get_data_from_json
-from src.tools.create_sql_schema import write_sql_create_table_statements
-from src.tools.prepare_and_load_to_mysql import insert_data_into_mysql_db
+from src.tools.etl.read_json_data import get_data_from_json
+from src.tools.etl.create_sql_schema import write_sql_create_table_statements
+from src.tools.etl.prepare_and_load_to_mysql import insert_data_into_mysql_db
 from src.tools import logger  # This runs the setup
 import logging
-from src.tools.mysql_connection import  mysql_connection
+from src.tools.db.mysql_connection import  mysql_connection
 mysql_engine,mysql_connection =  mysql_connection()
 
 def main():

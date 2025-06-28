@@ -8,9 +8,9 @@ import os
 import pandas as pd
 import logging 
 from src.tools.utils.helper_function_cleaning_df import clean_fhir_column_names
-from src.tools.df_preprocessor import df_processor
-from src.tools.generate_sql_create_queries import generate_mysql_create_table_query
-from src.tools.create_schema import  execute_create_table_sql
+from src.tools.utils.df_preprocessor import df_processor
+from src.tools.etl.generate_sql_create_queries import generate_mysql_create_table_query
+from src.tools.db.execute_create_table_sql import  execute_create_table_sql
 
 
 
