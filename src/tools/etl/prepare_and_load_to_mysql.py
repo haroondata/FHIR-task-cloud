@@ -11,8 +11,7 @@ from src.tools.utils.helper_function_cleaning_df import clean_fhir_column_names
 from src.tools.utils.df_preprocessor import df_processor
 from src.tools.etl.creates_csv_file import create_csv_files
 from src.tools.db.db_inserter import insert_data_into_mysql
-
-from src.tools.check_connection import check_if_connection_is_closed
+from src.tools.db.check_connection import check_if_connection_is_closed
 
 
 
