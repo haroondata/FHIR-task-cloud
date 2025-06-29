@@ -10,7 +10,7 @@ import logging
 from src.tools.utils.helper_function_cleaning_df import clean_fhir_column_names
 from src.tools.utils.df_preprocessor import df_processor
 from src.tools.etl.generate_sql_create_queries import generate_mysql_create_table_query
-from src.tools.db.execute_create_table_sql import  execute_create_table_sql
+from src.tools.db.execute_create_table_sql import  execute_create_table_sql_queries
 
 
 
@@ -47,7 +47,7 @@ def write_sql_create_table_statements(mysql_connection,resource_map):
             
             sql_code = generate_mysql_create_table_query(df, table_name)
             
-            execute_create_table_sql(mysql_connection,sql_code)
+            execute_create_table_sql_queries(mysql_connection,sql_code)
             
             # Save to file
             sql_path = os.path.join(sql_dir, f"{table_name}.sql")
