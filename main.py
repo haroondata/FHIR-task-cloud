@@ -12,6 +12,7 @@ from src.tools.etl.prepare_and_load_to_mysql import insert_data_into_mysql_db
 from src.tools import logger  # This runs the setup
 import logging
 from src.tools.db.mysql_connection import  mysql_connection
+
 mysql_engine,mysql_connection =  mysql_connection()
 
 def main():
