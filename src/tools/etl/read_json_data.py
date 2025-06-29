@@ -10,12 +10,6 @@ import json
 from collections import defaultdict
 
 
-
-
-
-
-
-
 def flatten_json(nested_json: dict) -> dict:
     """
     
