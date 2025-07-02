@@ -10,6 +10,7 @@ import os
 import sqlalchemy
 import logging
 
+logger = logging.getLogger("pipeline")
 
 
 def mysql_connection():
@@ -43,7 +44,7 @@ def mysql_connection():
        
     try:
         connection = engine.connect()
-        logging.info("Connected to the MySQL database.")
+        logger.info("Connected to the MySQL database.")
     except Exception as e:
         raise Exception("Connection failed:", e)
     return engine, connection
