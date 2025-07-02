@@ -6,10 +6,12 @@ Created on Thu Jun 26 17:54:39 2025
 """
 import logging
 
+logger = logging.getLogger("pipeline")
+
 def check_if_connection_is_closed(mysql_connection):  
     """
     
-    
+    This function will check if the connection is closed 
     Returns
     -------
     None.
@@ -18,6 +20,6 @@ def check_if_connection_is_closed(mysql_connection):
     #Check if connection is closed
     try:
         mysql_connection.close()
-        logging.info("MySQL connection is closed")
+        logger.info("MySQL connection is closed")
     except Exception as e:
-        logging.info(f"Failed to cose connection:{e}")
+        logger.info(f"Failed to close connection:{e}")
