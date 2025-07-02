@@ -1,5 +1,4 @@
 *.pyc
-.env
 data/
 *.csv
 *.csv
