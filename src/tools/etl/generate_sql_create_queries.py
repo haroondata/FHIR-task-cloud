@@ -8,19 +8,19 @@ Created on Thu Jun 26 18:04:16 2025
 
 def generate_mysql_create_table_query(df, table_name):
     """
-    
+    Generate the create statements based on the Dataframe 
 
     Parameters
     ----------
-    df : TYPE
-        DESCRIPTION.
-    table_name : TYPE
-        DESCRIPTION.
+    df : DataFrame
+        df of the resources.
+    table_name : String
+        Name of the table that will be created.
 
     Returns
     -------
-    TYPE
-        DESCRIPTION.
+    sql_code
+        This will return the sql_code for creating the tables by resource.
 
     """
     sql_types = {
@@ -30,18 +30,25 @@ def generate_mysql_create_table_query(df, table_name):
         'bool': 'BOOLEAN',
         'datetime64[ns]': 'DATETIME'
     }
-
+    
+    # Lines list  which will append each column with the datatype
     lines = [f"CREATE TABLE IF NOT EXISTS `{table_name}` ("]
     
+    # List to append  
     col_defs = []
     for col in df.columns:
+        # Replace spaces and dots with underscores
         col_name = col.replace(" ", "_").replace(".", "_").lower()
         try:
+            # Get data type of column
             dtype = str(df[col].dtype)
         except Exception as e:
             print(f"Error getting dtype for column '{col}': {e}")
-            dtype = 'object'
+           
+        # If the dtype is not found it will default to VARCHAR(255)
         sql_type = sql_types.get(dtype, 'VARCHAR(255)')
+        
+        # Append line for each datatype in SQL
         col_defs.append(f"  `{col_name}` {sql_type} DEFAULT NULL")
 
     #  Join columns with commas, and ensure no trailing comma
