@@ -48,14 +48,6 @@ docker-compose up --build
 ./
 ├── .env
 ├── .gitignore
-├── .pytest_cache
-│   ├── .gitignore
-│   ├── CACHEDIR.TAG
-│   └── v
-│       └── cache
-│           ├── lastfailed
-│           ├── nodeids
-│           └── stepwise
 ├── Dockerfile
 ├── docker-compose.yml
 ├── docs
