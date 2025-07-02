@@ -1,16 +1,24 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Jun 26 11:28:59 2025
+
+@author: Haroon
+"""
+
 def clean_fhir_column_names(df):
     """
     
-
+    Clean dataframe columns
     Parameters
     ----------
-    df : TYPE
-        DESCRIPTION.
+    df : Dataframe 
+         Datafame will be cleaned
+        
 
     Returns
     -------
-    df : TYPE
-        DESCRIPTION.
+    df : Dataframe
+        return dataframe will clean column names.
 
     """
     df.columns = (
