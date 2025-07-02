@@ -6,14 +6,16 @@ Created on Thu Jun 26 17:56:29 2025
 """
 import logging
 import os 
+
+logger = logging.getLogger("pipeline")
 def create_csv_files(output_dir,resource_type,df):
     """
-    
-
+    Store the DF by resource type in a csv file in the output folder 
+   
     Parameters
     ----------
-    df : TYPE
-        DESCRIPTION.
+    df : Dataframe
+        Dataframe of the data per resrouce.
 
     Returns
     -------
@@ -24,4 +26,4 @@ def create_csv_files(output_dir,resource_type,df):
    
     df.to_csv(csv_path, index=False)
     
-    logging.info(f"Saved {resource_type} records to {csv_path}")
+    logger.info(f"Saved {resource_type} records to {csv_path}")
