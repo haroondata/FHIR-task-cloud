@@ -12,22 +12,31 @@ from src.tools.etl.prepare_and_load_to_mysql import insert_data_into_mysql_db
 from src.tools import logger  # This runs the setup
 import logging
 from src.tools.db.mysql_connection import  mysql_connection
+from src.tools.logger import setup_logger
 
+logger = setup_logger()
+
+logger.info("Starting the data pipeline.")
 mysql_engine,mysql_connection =  mysql_connection()
+logging.info(type(mysql_engine))
+logging.info(type(mysql_connection))
 
 def main():
+   
    try:
+       
        # Read and parse Json files into resource maps
        resource_map, file_tracking_map = get_data_from_json()
-       logging.info(f"Extracted resources: {list(resource_map.keys())}")
+       logger.info(f"Extracted resources: {list(resource_map.keys())}")
        
        # Generate and execute SQL Table creation statements 
-       write_sql_create_table_statements(mysql_connection,resource_map)
+       write_sql_create_table_statements(mysql_engine,mysql_connection,resource_map)
        
+       # Insert data into mysql tables
        insert_data_into_mysql_db(mysql_engine,mysql_connection,resource_map, file_tracking_map)
      
    except Exception as e: 
-       logging.exception(f"Pipelines execution faile:{e}")      
+       logger.exception(f"Pipelines execution faile:{e}")      
    
    
 if __name__ == '__main__':
