@@ -1,6 +1,7 @@
 services:
   app:
     build: .
+    mem_limit: 2g
     env_file: .env
     command: ["python", "main.py"]
     volumes:
