@@ -1,6 +1,6 @@
 *.pyc
 .env
 data/
+*.csv
+*.csv
 output/
-*.csv
-*.csv
