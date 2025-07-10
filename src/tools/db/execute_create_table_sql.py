@@ -40,6 +40,7 @@ def execute_create_table_sql_queries(mysql_connection,sql_code):
         sql_query_select = text(sql_code)
         # Execute sql query
         mysql_connection.execute(sql_query_select)
+        mysql_connection.commit() 
         logger.info("Table created successfully.")
     except Exception as e:
         logger.error(f"Failed to create table. SQL: {sql_code[:100]}...")
@@ -58,6 +59,7 @@ def create_audit_log_table(mysql_connection):
                                 """
         sql_query_select = text(audit_log_create_statement)
         mysql_connection.execute(sql_query_select)
+        mysql_connection.commit() 
         logger.info("Table created successfully.")
         
     except Exception as e:
