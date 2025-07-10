@@ -9,6 +9,8 @@ from urllib.parse import quote_plus
 import os
 import sqlalchemy
 import logging
+import urllib.parse
+
 
 logger = logging.getLogger("pipeline")
 
@@ -30,9 +32,10 @@ def mysql_connection():
   
     #config to get the MYSQL info
     db_username = os.getenv('DB_USER')
-    db_password = quote_plus(os.getenv('DB_PASSWORD'))
+    #db_password = quote_plus(os.getenv('DB_PASSWORD'))
+    db_password = urllib.parse.quote_plus(os.getenv('DB_PASSWORD'))
     db_host     = os.getenv('DB_HOST')
-    db_port     = os.getenv('DB_PORT', '3306')
+    db_port     = os.getenv('DB_PORT', 3306)
     db_name     = os.getenv('DB_NAME')
     
   
