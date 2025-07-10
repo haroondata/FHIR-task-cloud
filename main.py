@@ -24,6 +24,7 @@ logging.info(type(mysql_connection))
 def main():
    
    try:
+      
        
        # Read and parse Json files into resource maps
        resource_map, file_tracking_map = get_data_from_json()
@@ -36,7 +37,7 @@ def main():
        insert_data_into_mysql_db(mysql_engine,mysql_connection,resource_map, file_tracking_map)
      
    except Exception as e: 
-       logger.exception(f"Pipelines execution faile:{e}")      
+       logger.exception(f"Pipelines execution failed:{e}")      
    
    
 if __name__ == '__main__':
