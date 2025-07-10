@@ -47,7 +47,9 @@ def insert_data_into_mysql(mysql_engine, mysql_connection, df, table_name, sourc
         try:
         
             # Insert df to sql database table
-            df.to_sql(table_name, con=mysql_engine, if_exists="append", index=False)
+            with mysql_engine.begin() as conn:
+                
+                df.to_sql(table_name, con=conn, if_exists="append", index=False)
             logger.info(f"Inserted {row_count} rows into `{table_name}`.")
 
             # Verify the count of inserted rows
