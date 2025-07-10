@@ -8,6 +8,10 @@ import logging
 import os
 import json
 from collections import defaultdict
+from dotenv import load_dotenv
+import os
+
+from google.cloud import storage
 
 logger = logging.getLogger("pipeline")
 
@@ -121,55 +125,77 @@ def get_data_from_json():
         DESCRIPTION.
 
     """
-    #  File Path 
-    data_dir = os.path.join("/app/data")
-
     
+    load_dotenv()  # loads from .env
+
+    # === Configuration ===
+    BUCKET_NAME = "fhir-raw-haroon"
+
+    # Initialize GCS client
+    client = storage.Client()
+
+    # List top-level "folders" by setting delimiter='/'
+    bucket = client.bucket(BUCKET_NAME)
+    iterator = client.list_blobs(BUCKET_NAME, delimiter="/")
+    folders = []
+    # Collect folder names from prefixes
     resource_map = defaultdict(list)
     file_tracking_map = {} 
     
-    # Loop over all JSON files 
-    for file in os.listdir(data_dir):
-        # Check for files that the files extension .json
-        if file.endswith(".json"):
-            # Get the file with the full file path
-            file_path = os.path.join(data_dir, file)
-            
-            logger.info(f"Processing file: {file_path}")
-            try:
-                # Open file 
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    bundle = json.load(f)
-            except (json.JSONDecodeError, UnicodeDecodeError) as e:
-                logger.error(f"Invalid JSON file: {file_path} — {e}")
-                continue
-            
-            # Flatten and group by resourceType 
-            # Check if JSON file has the JSON fil has the key bundle
-            
-            if 'entry' not in bundle or not bundle['entry']:
-                logger.warning(f"No 'entry' found in {file_path}. Skipping.")
-                continue
-            # Got to dicitonary with key Entry
-            entries = bundle.get('entry', [])
-            # Loop through each dictioanry 
-            for item in entries:
-                # Get data by resource
-                resource = item.get('resource', {})
-                # Get the the resource type if it is not now us Unknown
-                resource_type = resource.get('resourceType', 'Unknown')
-                # Check for resource_type Patient
-                if resource_type == "Patient":
-                    # Function to get extract patient data
-                    flat = extract_patient_data(resource)
-                else:
-                    # Flatten JSON File
-                    flat = flatten_json(resource)
-                # Append flat JSON
-                resource_map[resource_type].append(flat)
+    print("📂 Folders found:")
+    for page in iterator.pages:
+        for prefix in page.prefixes:
+            folders.extend(page.prefixes)
+
+    for folder in folders:
+        print(f"\n {folder}")
+        
+        # List all files inside each folder
+        blobs_in_folder = client.list_blobs(BUCKET_NAME, prefix=folder)
+        
+        for blob in blobs_in_folder:
+            print(blob)
+            print(f"  📄 {blob.name}")
+    
+            # Check for files that the files extension .json
+            if blob.name.endswith(".json"):
+                # Get the file with the full file path
+                file_path = blob.name
+                json_data = blob.download_as_text()
+                logger.info(f"Processing file: {file_path}")
+                try:
+                     json_text = blob.download_as_text(encoding='utf-8')
+                     bundle = json.loads(json_text)
+                except (json.JSONDecodeError, UnicodeDecodeError) as e:
+                    logger.error(f"Invalid JSON in {blob.name} — {e}")
+                    continue
                 
-                # Add File 
-                file_tracking_map[resource_type] = file 
+                # Flatten and group by resourceType 
+                # Check if JSON file has the JSON fil has the key bundle
+                
+                if 'entry' not in bundle or not bundle['entry']:
+                    logger.warning(f"No 'entry' found in {file_path}. Skipping.")
+                    continue
+                # Got to dicitonary with key Entry
+                entries = bundle.get('entry', [])
+                # Loop through each dictioanry 
+                for item in entries:
+                    # Get data by resource
+                    resource = item.get('resource', {})
+                    # Get the the resource type if it is not now us Unknown
+                    resource_type = resource.get('resourceType', 'Unknown')
+                    # Check for resource_type Patient
+                    if resource_type == "Patient":
+                        # Function to get extract patient data
+                        flat = extract_patient_data(resource)
+                    else:
+                        # Flatten JSON File
+                        flat = flatten_json(resource)
+                    # Append flat JSON
+                    resource_map[resource_type].append(flat)
+                    
+                    # Add File 
+                    file_tracking_map[resource_type] = file_path 
     return resource_map, file_tracking_map
 
 
